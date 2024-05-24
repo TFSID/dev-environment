@@ -1,0 +1,41 @@
+services:
+  dind:
+    image: docker:latest
+    privileged: true
+    environment:
+      - DOCKER_TLS_CERTDIR=""
+    volumes:
+      - dind-data:/var/lib/docker
+    command: ["--host=unix:///var/run/docker.sock"]
+  arch:
+    image: archlinux-dev-env
+    build: 
+      context: OS/
+      dockerfile: arch.Dockerfile
+    container_name: arch-docker
+    privileged: true
+    environment:
+      - DOCKER_HOST=tcp://dind:2375
+    volumes:
+      - arch-dind-data:/var/lib/docker
+    ports:
+      - "2222:22"
+    stdin_open: true
+    tty: true
+  arch2:
+    image: archlinux-dev-env2
+    build: 
+      context: OS/
+      dockerfile: arch.Dockerfile
+    container_name: arch2-docker
+    privileged: true
+    volumes:
+      - arch2-dind-data:/var/lib/docker
+    ports:
+      - "2223:22"
+    stdin_open: true
+    tty: true
+volumes:
+  dind-data:
+  arch-dind-data:
+  arch2-dind-data:
